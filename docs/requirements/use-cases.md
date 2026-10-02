@@ -1224,8 +1224,7 @@ No two teams can have the same name. The team name must be unique. The course ad
 - PRE-1. The course admin is logged into the system.
 
 **Postconditions:**
-- POST-1. An invitation email is sent to each invited address that does not already have an account.
-- POST-2. The course admin is told which addresses were skipped as already having an account, and which could not be emailed.
+- POST-1. Invitation emails are sent to all the students.
 
 **Main Success Scenario:**
 1. The course admin indicates to invite students to join a course section.
@@ -1247,14 +1246,6 @@ No two teams can have the same name. The team name must be unique. The course ad
 - **6a. The course admin indicates to personalize the default email message:**
   - 6a1. The course admin customizes the email content and confirms the message.
   - 6a2. Returns to step 6 of the normal flow.
-- **10a. The system cannot email one or more of the addresses:**
-  - 10a1. The system continues with the remaining addresses rather than abandoning the batch, so that a single undeliverable address does not cost the other students their invitation.
-  - 10a2. The system reports to the course admin which addresses it could not email, so that she can invite those again.
-  - 10a3. Use case ends.
-- **10b. One or more of the addresses already has an account:**
-  - 10b1. The system creates no invitation for that address and sends it no email, since a registration link cannot be used by someone who has already registered.
-  - 10b2. The system reports those addresses to the course admin alongside the ones it invited, so that re-inviting a whole roster reports where the course section stands.
-  - 10b3. Use case ends.
 
 **Priority:** High
 **Frequency of Use:** 1 user, 1 usage per year.
@@ -1263,48 +1254,7 @@ No two teams can have the same name. The team name must be unique. The course ad
 **Associated Information:**
 - Email format: emails shall be separated by semicolon and the system shall ignore spaces in between. E.g., Good: john.doe@tcu.edu; f.smith@tcu.edu; tim.johnson@tcu.edu; lily.p.lee@tcu.edu Good: john.doe@tcu.edu;f.smith@tcu.edu Bad: john.doe@tcu.edu; f.smith@tcu.edu; Bad: john.doe@tcu.edu f.smith@tcu.edu Default email message: *Subject: Welcome to Project Pulse - Complete Your Registration Hello, [Name of the course admin] has invited you to join Project Pulse. To complete your registration, please use the link below: [Registration link] If you have any questions or need assistance, feel free to contact [course admin's email] or our team directly. Please note: This email is not monitored, so do not reply directly to this message. Best regards, Project Pulse Team*  The invitation link shall be unique for each student. The course admin shall be able to cancel the use case at any time prior to submitting it.
 
-**Assumptions:** AS-new-student-accounts (an address that already has an account is skipped rather than invited, per extension 10b), AS-one-section-per-student
-**Open Issues:**
-
-### **UC-STU-view-pending-invitations: The course admin views the students who have not registered yet**
-
-**UC ID and Name:** UC-STU-view-pending-invitations: View the students who have not registered yet
-**Created By:**
-**Date Created:**
-**Primary Actor:** course admin
-**Secondary Actors:**
-**Trigger:** The course admin indicates to view the outstanding student invitations of a course section.
-**Description:** The course admin wants to see which invited students have not created an account yet, so that she can follow up with those students instead of re-inviting the whole course section.
-
-**Preconditions:**
-- PRE-1. The course admin is logged into the system.
-- PRE-2. The course admin owns the course section (BR-invitations-admin-only).
-
-**Postconditions:**
-- POST-1. The course admin is shown the invited students who have not registered.
-- POST-2. The course admin is shown how many such students there are.
-
-**Main Success Scenario:**
-1. The course admin indicates to view the outstanding student invitations of a course section.
-2. The system displays every address invited to that course section as a student that has not registered an account.
-3. The system displays how many such addresses there are.
-4. Use case ends.
-
-**Extensions:**
-- **2a. Every invited student has registered:**
-  - 2a1. The system informs the course admin that no student invitation is outstanding.
-  - 2a2. Use case ends.
-
-**Priority:** Medium
-**Frequency of Use:** 1 user, a few usages per course section per semester.
-**Business Rules:** BR-invitations-admin-only
-
-**Associated Information:**
-- The listing shows email addresses only. An invitation also carries the registration token that its email delivers, and that token is never included in a listing.
-- Registering deletes the invitation that was used, so a student leaves this listing by signing up, and no invitation is created for an address that already has an account (UC-STU-invite-students, extension 10b), so re-inviting a whole course section adds nobody to this listing who has already joined.
-- Instructor invitations (UC-INS-invite-instructors) are not shown here; this listing is about students joining a course section.
-
-**Assumptions:** AS-one-section-per-student (an invitation is keyed by the invited address alone, which is unambiguous only because a student is invited to one course section)
+**Assumptions:**
 **Open Issues:**
 
 ### **UC-STU-find-students: The course admin/instructor finds students**
@@ -1538,8 +1488,7 @@ Details:
 - PRE-1. The course admin is logged into the system.
 
 **Postconditions:**
-- POST-1. An invitation email is sent to each invited instructor address.
-- POST-2. The course admin is told which addresses could not be emailed.
+- POST-1. Invitation emails are sent to instructors.
 
 **Main Success Scenario:**
 1. The course admin indicates to invite instructors to register an account.
@@ -1561,10 +1510,6 @@ Details:
 - **6a. The course admin indicates to personalize the default email message:**
   - 6a1. The course admin customizes the email content and confirms the message.
   - 6a2. Returns to step 6 of the normal flow.
-- **10a. The system cannot email one or more of the addresses:**
-  - 10a1. The system continues with the remaining addresses rather than abandoning the batch, so that a single undeliverable address does not cost the other instructors their invitation.
-  - 10a2. The system reports to the course admin which addresses it could not email, so that she can invite those again.
-  - 10a3. Use case ends.
 
 **Priority:** High
 **Frequency of Use:** 1 user, 1 usage per year.
@@ -1982,6 +1927,66 @@ The student shall be able to cancel the use case at any time prior to submitting
 **Assumptions:**
 **Open Issues:**
 
+### **UC-INS-nudge-non-submitters: The instructor nudges students who have not submitted required weekly work**
+
+**UC ID and Name:** UC-INS-nudge-non-submitters: Nudge students who have not submitted required weekly work
+**Created By:**
+**Date Created:**
+**Primary Actor:** instructor
+**Secondary Actors:** student
+**Trigger:** The instructor indicates to review which students in a course section have not yet submitted the required weekly activity report or peer evaluation for the selected week and send a reminder to the missing students.
+**Description:** The instructor wants to identify students in her course section who have not yet submitted the required weekly work, so that she can send a reminder only to the students who still need to submit and avoid bothering students who have already completed it.
+
+**Preconditions:**
+- PRE-1. The instructor is logged into the system.
+- PRE-2. The instructor is assigned to the course section whose students are being reviewed.
+- PRE-3. The selected reporting week is one of the section's active weeks.
+
+**Postconditions:**
+- POST-1. The system displays the list of students in the instructor's section who are still missing the selected submission.
+- POST-2. A reminder email is sent only to the students selected by the instructor and only if they are still missing the required submission at the time the reminder is sent.
+
+**Main Success Scenario:**
+1. The instructor indicates to nudge students who have not submitted required weekly work.
+2. The system asks the instructor to select a course section, a reporting week, and the due item to review (weekly activity report, peer evaluation, or both).
+3. The instructor selects the section, reporting week, and due item(s) and confirms that she has finished.
+4. The system validates the selections and compares the selected due item(s) against each student's submitted work for that reporting period.
+5. The system displays the list of students in the section who are eligible to submit and still missing the required artifact(s), grouped by team and sorted by last name.
+6. The instructor reviews the list and chooses the students to receive a reminder.
+7. The system asks the instructor to confirm sending the reminder.
+8. The instructor confirms sending the reminder.
+9. The system sends a reminder email only to each selected student who still has a missing submission at the moment of sending and does not send duplicates to students who already submitted or were excluded from eligibility.
+10. The system records the reminder for the selected due item and week so that the same student is not reminded again during the same reporting window (BR-reminder-once-per-window).
+11. Use case ends.
+
+**Extensions:**
+- **4a. The selected week is not one of the section's active weeks or the due item's submission window has closed:**
+  - 4a1. The system does not produce a non-submitter list for that week and informs the instructor that reminders are sent only for active weeks and open submission windows (BR-active-weeks, BR-evaluation-submission-window).
+  - 4a2. Use case ends.
+- **4b. A student is not assigned to a team in the selected section:**
+  - 4b1. The system excludes the student from the non-submitter list because a student without a team assignment has no submission obligation for the weekly activity report or peer evaluation (BR-team-assignment-required).
+  - 4b2. The system continues evaluating the remaining students.
+- **4c. A student submitted a report or evaluation and then deleted it before the reminder is sent:**
+  - 4c1. The system treats the student as a non-submitter because the required artifact is no longer present, and the reminder remains valid for the current reporting window.
+  - 4c2. The system continues evaluating the remaining students.
+- **6a. The instructor requests a second reminder for the same student and the same due item in the same reporting window:**
+  - 6a1. The system blocks the duplicate reminder and informs the instructor that at most one reminder may be sent per student, per due item, per reporting week (BR-reminder-once-per-window).
+  - 6a2. The instructor either selects a different student or cancels the operation.
+- **9a. The mail server rejects the student's email address:**
+  - 9a1. The system logs the failure, skips that student, and continues sending to the remaining students.
+  - 9a2. Use case ends.
+
+**Priority:** High
+**Frequency of Use:** Approximately 1 user, 1 usage per week per section.
+**Business Rules:** BR-section-scoped-access, BR-role-based-access, BR-team-assignment-required, BR-active-weeks, BR-evaluation-submission-window, BR-reminder-once-per-window
+
+**Associated Information:**
+- Non-submitter definition: A student is counted as a non-submitter only when she is a member of the selected course section's team roster, the selected week is active for that section, and the required artifact for the selected due item has not been submitted and remains missing at the time the list is generated. A student who is not assigned to a team is excluded from the list, and a submitted artifact that has since been deleted is treated as missing.
+- Reminder delivery: The reminder email uses the student's current section contact email and says which submission is still missing. The instructor shall be able to cancel the use case at any time before confirmation.
+
+**Assumptions:**
+**Open Issues:**
+
 ## **Weekly Activity Report**
 
 ### **UC-WAR-manage-activities: The student manages activities in a Weekly Activity Report (WAR)**
@@ -1996,7 +2001,6 @@ The student shall be able to cancel the use case at any time prior to submitting
 
 **Preconditions:**
 - PRE-1. The student is logged into the system.
-- PRE-2. The student is assigned to a team (BR-team-assignment-required).
 
 **Postconditions:**
 - POST-1. A new activity is added to the WAR for that week. or
@@ -2028,9 +2032,6 @@ The student shall be able to cancel the use case at any time prior to submitting
 22. Use case ends.
 
 **Extensions:**
-- **1a. The student is not assigned to a team:**
-  - 1a1. The system does not accept the activity and informs the student that she must be assigned to a team before she can manage activities in a weekly activity report (BR-team-assignment-required).
-  - 1a2. Use case ends.
 - **8a. Input validation rule violation:**
   - 8a1. The system alerts the student that an input validation rule is violated and displays the nature and location of the error.
   - 8a2. The student corrects the mistake and returns to step 8 of the normal flow.
@@ -2040,7 +2041,7 @@ The student shall be able to cancel the use case at any time prior to submitting
 
 **Priority:** High
 **Frequency of Use:** Approximately 35-40 users, average of 3 usages per week.
-**Business Rules:** BR-team-scoped-access, BR-role-based-access (a student manages activities only in her own weekly activity report, within a team she belongs to); BR-team-assignment-required (only a student assigned to a team submits one).
+**Business Rules:**
 
 **Associated Information:**
 - Details: The student can add activities to a WAR. For each activity, the student shall provide the following: Activity category: DEVELOPMENT, TESTING, BUGFIX, COMMUNICATION, DOCUMENTATION, DESIGN, PLANNING, LEARNING, DEPLOYMENT, SUPPORT, MISCELLANEOUS Activity Description Planned hours Actual hours Status: In progress, Under testing, Done. The above properties are editable. The student shall be able to cancel the use case at any time prior to submitting it.
@@ -2083,12 +2084,11 @@ The student shall be able to cancel the use case at any time prior to submitting
 
 **Priority:** High
 **Frequency of Use:** Approximately 37 users, average of 1 usage per week.
-**Business Rules:** BR-team-scoped-access (a student may generate the report only for a team she belongs to), BR-section-scoped-access (an instructor may generate it only for a team in a course section she is assigned to), BR-role-based-access.
+**Business Rules:**
 
 **Associated Information:**
 
 Report generating parameters:
-- Team: The team the report covers. A student may generate the report only for a team she belongs to, so the system binds the parameter to her own team rather than accepting a caller-supplied one (BR-team-scoped-access). An instructor may select any team in a course section she is assigned to (BR-section-scoped-access).
 - Active week: Each WAR report is associated with a week. The instructor shall first indicate for which active week she wants to generate a WAR. E.g., "02-12-2024 to 02-18-2024"; by default, it shall be the previous week.
 - Columns to include: student name, Activity category, Planned activity, Description, Planned hours, Actual hours, Status. See the example below.
 - Sorting criteria: by default, sort by last name in ascending order.
@@ -2147,7 +2147,7 @@ Report generating algorithm: N/A
 
 **Priority:** High
 **Frequency of Use:** 2 users, average of 10 usage per week.
-**Business Rules:** BR-section-scoped-access, BR-role-based-access (the instructor may generate the report only for a student in a course section she is assigned to).
+**Business Rules:**
 
 **Associated Information:**
 
@@ -2195,7 +2195,6 @@ Report generating algorithm: N/A
 
 **Preconditions:**
 - PRE-1. The student is logged into the system.
-- PRE-2. The student is assigned to a team (BR-team-assignment-required).
 
 **Postconditions:**
 - POST-1. The peer evaluation is stored in the system.
@@ -2219,16 +2218,13 @@ Report generating algorithm: N/A
 - **1b. The week to be evaluated is not the previous week, or its one-week submission window has closed:**
   - 1b1. The system does not accept the peer evaluation and informs the student that a peer evaluation may be submitted only for the previous week, within its one-week window, and that a missed evaluation cannot be made up (BR-evaluation-submission-window).
   - 1b2. Use case ends.
-- **1c. The student is not assigned to a team:**
-  - 1c1. The system does not accept a peer evaluation and informs the student that she must be assigned to a team before she can submit peer evaluations (BR-team-assignment-required).
-  - 1c2. Use case ends.
 - **4a. Input validation rule violation:**
   - 4a1. The system alerts the student that an input validation rule is violated and displays the nature and location of the error.
   - 4a2. The student corrects the mistake and returns to step 4 of the normal flow.
 
 **Priority:** High
 **Frequency of Use:** Approximately 35-40 users, 1 usage per week.
-**Business Rules:** BR-team-scoped-access (the student evaluates the members of a team she belongs to, and no other team), BR-team-assignment-required (only a student assigned to a team submits one), BR-active-weeks, BR-evaluation-editable-until-close, BR-evaluation-submission-window, BR-evaluation-private-comment
+**Business Rules:** BR-active-weeks, BR-evaluation-editable-until-close, BR-evaluation-submission-window, BR-evaluation-private-comment
 
 **Associated Information:**
 
@@ -2284,7 +2280,7 @@ Private comments are for the instructor only. Public comments will be sent to th
 
 **Priority:** High
 **Frequency of Use:** Approximately 35-40 users, average of 1 usage per week.
-**Business Rules:** BR-team-scoped-access, BR-evaluation-visibility, BR-evaluation-private-comment (the student sees only her own results, and never another team's)
+**Business Rules:** BR-evaluation-visibility, BR-evaluation-private-comment
 
 **Associated Information:**
 
@@ -2343,7 +2339,7 @@ Report generating algorithm: For each individual criterion score (e.g., Quality 
 
 **Priority:** High
 **Frequency of Use:** Approximately 2 users, average of 1 usage per week.
-**Business Rules:** BR-section-scoped-access (the instructor may generate the report only for a course section she is assigned to), BR-evaluation-private-comment
+**Business Rules:** BR-evaluation-private-comment
 
 **Associated Information:**
 
@@ -2415,7 +2411,7 @@ Details of a peer evaluation: The instructor may choose to see more details of o
 
 **Priority:** High
 **Frequency of Use:** 2 users, average of 10 usage per week.
-**Business Rules:** BR-section-scoped-access (the instructor may generate the report only for a student in a course section she is assigned to), BR-evaluation-private-comment
+**Business Rules:** BR-evaluation-private-comment
 
 **Associated Information:**
 
